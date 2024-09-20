@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa6";
 import loginIcon from '../assest/signin.gif'
 import imageTobase64 from '../helpers/imageTobase64';
+import SummaryApi from '../common';
+import { toast } from 'react-toastify';
 
 
 const SignUp = () => {
@@ -16,6 +18,8 @@ const SignUp = () => {
     confirmpassword:"",
     profilePic:"",
   })
+  const navigate =useNavigate()
+
   const handleOnChange = (e)=> {
     const {name ,value}=e.target
     setData((preve)=>{
@@ -33,14 +37,43 @@ const SignUp = () => {
     setData((preve)=>{
       return{
         ...preve,
-        setData:imagePic
+        profilePic:imagePic
       }
     })
   }
-  const handleSubmit=(e)=>{
+
+
+  const handleSubmit= async(e)=>{
     e.preventDefault()
+
+    if(data.password === data.confirmpassword){
+      const dataRespone = await fetch(SummaryApi.signUp.url,{
+      method : SummaryApi.signUp.method,
+      headers : {
+        "content-type" : "application/json"
+      },
+      body : JSON.stringify(data)
+    })
+    const dataApi= await dataRespone.json()
+
+      if(dataApi.success){
+        toast.success(dataApi.message)  //đăng nhập thành công gửi thông báo
+        navigate("/login")
+
+      } 
+      if (dataApi.error){
+        toast.error(dataApi.message)  //Đăng nhập không thành công sẽ gửi thông báo
+      }
+
+    
   }
-  console.log("data login",data)
+  else{
+    console.log("Please check password and confirm password")
+  }
+    }
+    
+
+
   return (
     <section id='signup'>
         <div className='mx-auto container p-4'>

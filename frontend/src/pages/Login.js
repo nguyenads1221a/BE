@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom';
+import { Await, Link } from 'react-router-dom';
 import loginIcon from '../assest/signin.gif'
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa6";
+import SummaryApi from '../common';
+import { toast } from 'react-toastify';
 
 
 const Login = () => {
@@ -20,8 +22,24 @@ const Login = () => {
       }
     })
   }
-  const handleSubmit=(e)=>{
+  const handleSubmit= async(e)=>{
     e.preventDefault()
+    const dataRespone = await fetch(SummaryApi.signIn.url,{
+      method : SummaryApi.signIn.method,
+      headers :{
+        "content-type":"application/json"
+      },
+      body :JSON.stringify(data)
+    })
+
+    const dataApi = await dataRespone.json()
+    if(dataApi.success){
+      toast.success(dataApi.message)
+    }
+    if(dataApi.error){
+      toast.error(dataApi.message)
+    }
+    
   }
   console.log("data login",data)
   return (
